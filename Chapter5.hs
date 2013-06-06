@@ -182,6 +182,15 @@ area :: Shape -> Float
 area (Circle r)      = pi*r*r
 area (Rectangle h w) = h*w
 
+perimeter :: Shape -> Float
+perimeter (Circle r) = 2 * pi * r
+perimeter (Rectangle w h) = (2 * w) + (2 * h)
+
+type ItemName = String
+type Pences = Int
+data ShopItem' = Item ItemName Pences
+
+
 -- Derived instances ...
 
 --	data Season = Spring | Summer | Autumn | Winter 

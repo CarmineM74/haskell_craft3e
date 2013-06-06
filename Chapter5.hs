@@ -164,7 +164,8 @@ data NewAge = Years Int
 -- rectangle. These alternatives are given by the type
 
 data Shape = Circle Float |
-             Rectangle Float Float
+             Rectangle Float Float |
+             Triangle Float Float Float
 	     deriving (Eq,Ord,Show,Read)
 
 shape1 = Circle 3.0
@@ -175,21 +176,61 @@ shape2 = Rectangle 45.9 87.6
 isRound :: Shape -> Bool
 isRound (Circle _)      = True
 isRound (Rectangle _ _) = False
+isRound (Triangle _ _ _) = False
 
 -- and also lets us use the components of the elements:
 
 area :: Shape -> Float
 area (Circle r)      = pi*r*r
 area (Rectangle h w) = h*w
+area (Triangle a b c) = sqrt (s*(s-a)*(s-b)*(s-c))
+  where
+    s = 0.5 * (a+b+c)
 
 perimeter :: Shape -> Float
 perimeter (Circle r) = 2 * pi * r
 perimeter (Rectangle w h) = (2 * w) + (2 * h)
+perimeter (Triangle a b c) = a + b + c
+
+isRegular :: Shape -> Bool
+isRegular (Circle _) = True
+isRegular (Rectangle w h) = w == h
+isRegular (Triangle a b c) = (a == b) && (b == c)
 
 type ItemName = String
 type Pences = Int
 data ShopItem' = Item ItemName Pences
 
+type Point = (Int, Int)
+data NewShape = Circle Float Point|
+             Rectangle Float Float Point |
+             Triangle Float Float Float Point
+	     deriving (Eq,Ord,Show,Read)
+
+move :: Float -> Float -> NewShape -> NewShape
+move nx ny (Circle r (x,y)) = Circle r (x+nx,y+ny)
+move nx ny (Rectangle w h (x,y)) = Rectangle w h (x+nx,y+ny)
+move nx ny (Triangle a b c (x,y)) = Triangle a b c (x+nx,y+ny)
+
+minMax :: Float -> Float -> (Float, Float)
+minMax a b = (min a b, max a b)
+
+5.13
+overlap :: NewShape -> NewShape -> Bool
+overlap (Circle r (x,y)) (Circle r' (x',y')) = d < (min r r')
+  where
+    (minx,maxx) = minMax x x'
+    (miny,maxy) = minMax y y'
+    a = maxx - minx
+    b = maxy - miny
+    d = sqrt ((a**2) + (b**2))
+
+-- se la distanza assoluta tra i centri dei due rettangoli sull'asse x e' minore della somma delle semilarghezze dei rettangoli e quella sull'asse y e' minore delle semialtezze allora i rettangoli sono sovrapposti.
+overlap (Rectangle w h (x,y)) (Rectangle w' h' (x',y')) = (a < semi_x) && (b < semi_y)
+  where
+    a = abs (x - x')
+    b = abs (y - y')
+    semi_x = a
 
 -- Derived instances ...
 

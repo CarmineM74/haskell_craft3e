@@ -219,10 +219,8 @@ minMax a b = (min a b, max a b)
 overlap :: NewShape -> NewShape -> Bool
 overlap (Circle r (x,y)) (Circle r' (x',y')) = d < (min r r')
   where
-    (minx,maxx) = minMax x x'
-    (miny,maxy) = minMax y y'
-    a = maxx - minx
-    b = maxy - miny
+    a = abs (x - x')
+    b = abs (y - y')
     d = sqrt ((a**2) + (b**2))
 
 -- se la distanza assoluta tra i centri dei due rettangoli sull'asse x e' minore della somma delle semilarghezze dei rettangoli e quella sull'asse y e' minore delle semialtezze allora i rettangoli sono sovrapposti.
@@ -230,7 +228,11 @@ overlap (Rectangle w h (x,y)) (Rectangle w' h' (x',y')) = (a < semi_x) && (b < s
   where
     a = abs (x - x')
     b = abs (y - y')
-    semi_x = a
+    semi_x = (w + w') / 2
+    semi_y = (h + h') / 2
+
+-- Mancano le basi matematiche per risolvere il problema :(
+overlap (Triangle a b c (x,y)) (Triangle a' b' c' (x',y')) = undefined
 
 -- Derived instances ...
 

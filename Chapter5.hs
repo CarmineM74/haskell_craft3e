@@ -358,6 +358,36 @@ isPrime n
   | divisors n == [1,n] = True
   | otherwise = False
 
+-- 5.21
+matches :: Integer -> [Integer] -> [Integer]
+matches n xs = [x | x <- xs, x == n]
+
+elem' :: Integer -> [Integer] -> Bool
+elem' x xs = length (matches x xs) > 0
+
+-- 5.22
+onSeparateLines :: [String] -> String
+onSeparateLines ss = concat [ s ++ "\n" | s <- ss] 
+
+-- 5.23
+duplicate :: String -> Integer -> String
+duplicate s n
+  | n == 0 = ""
+  | otherwise = concat [s | x <- [1..n]]
+
+-- 5.24
+pushRight :: String -> Int -> String
+pushRight s linelength
+  | linelength <= (length s) = s
+  | otherwise = (duplicate " " (toInteger padding)) ++ s
+    where
+      padding = linelength - (length s)
+
+-- 5.26
+fibTable :: Integer -> String
+fibTable n = concat (["n\tfib n\n"] ++ [ (show x) ++ "\t" ++ (show (fastFib x)) ++ "\n" | x <- [0..n]])
+
+
 -- A library database
 -- ^^^^^^^^^^^^^^^^^^
 

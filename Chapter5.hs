@@ -202,44 +202,42 @@ type Pences = Int
 data ShopItem' = Item ItemName Pences
 
 type Point = (Int, Int)
-data NewShape = Circle Float Point|
-             Rectangle Float Float Point |
-             Triangle Float Float Float Point
+data NewShape = Circle2 Float Point|
+             Rectangle2 Float Float Point |
+             Triangle2 Float Float Float Point
 	     deriving (Eq,Ord,Show,Read)
 
-move :: Float -> Float -> NewShape -> NewShape
-move nx ny (Circle r (x,y)) = Circle r (x+nx,y+ny)
-move nx ny (Rectangle w h (x,y)) = Rectangle w h (x+nx,y+ny)
-move nx ny (Triangle a b c (x,y)) = Triangle a b c (x+nx,y+ny)
+move :: Int -> Int -> NewShape -> NewShape
+move nx ny (Circle2 r (x,y)) = Circle2 r (x+nx,y+ny)
+move nx ny (Rectangle2 w h (x,y)) = Rectangle2 w h (x+nx,y+ny)
+move nx ny (Triangle2 a b c (x,y)) = Triangle2 a b c (x+nx,y+ny)
 
 minMax :: Float -> Float -> (Float, Float)
 minMax a b = (min a b, max a b)
 
-5.13
+-- 5.13
 overlap :: NewShape -> NewShape -> Bool
-overlap (Circle r (x,y)) (Circle r' (x',y')) = d < (min r r')
+overlap (Circle2 r (x,y)) (Circle2 r' (x',y')) = d < (min r r')
   where
     a = abs (x - x')
     b = abs (y - y')
-    d = sqrt ((a**2) + (b**2))
+    d = sqrt (fromIntegral ((a*a) + (b*b)))
 
 -- se la distanza assoluta tra i centri dei due rettangoli sull'asse x e' minore della somma delle semilarghezze dei rettangoli e quella sull'asse y e' minore delle semialtezze allora i rettangoli sono sovrapposti.
-overlap (Rectangle w h (x,y)) (Rectangle w' h' (x',y')) = (a < semi_x) && (b < semi_y)
+overlap (Rectangle2 w h (x,y)) (Rectangle2 w' h' (x',y')) = (a < semi_x) && (b < semi_y)
   where
-    a = abs (x - x')
-    b = abs (y - y')
+    a = fromIntegral (abs (x - x'))
+    b = fromIntegral (abs (y - y'))
     semi_x = (w + w') / 2
     semi_y = (h + h') / 2
 
 -- Mancano le basi matematiche per risolvere il problema :(
-overlap (Triangle a b c (x,y)) (Triangle a' b' c' (x',y')) = undefined
+overlap (Triangle2 a b c (x,y)) (Triangle2 a' b' c' (x',y')) = undefined
 
 -- Derived instances ...
 
 --	data Season = Spring | Summer | Autumn | Winter 
 --	              deriving (Eq,Ord,Enum,Show,Read)
-
-
 
 -- Lists in Haskell
 -- ^^^^^^^^^^^^^^^^
@@ -334,6 +332,31 @@ totalRadii shapes = sum [r | Circle r <- shapes]
 sings :: [[Integer]] -> [Integer]
 sings xss = [x | [x] <-xss ]
 
+
+-- 5.18
+doubleAll :: [Integer] -> [Integer]
+doubleAll xs = [2*x | x <- xs]
+
+-- 5.19
+capitalize :: String -> String
+capitalize s = [ toUpper c | c <- s]
+
+capitalizeLetters :: String -> String
+capitalizeLetters s = capitalize ([c | c <- s, isLetter c])
+
+-- 5.20
+isDivisor :: Integer -> Integer -> Bool
+isDivisor n m
+  | mod n m == 0 = True
+  | otherwise = False
+
+divisors :: Integer -> [Integer]
+divisors n = [x | x<-[1..n], isDivisor n x]
+
+isPrime :: Integer -> Bool
+isPrime n 
+  | divisors n == [1,n] = True
+  | otherwise = False
 
 -- A library database
 -- ^^^^^^^^^^^^^^^^^^

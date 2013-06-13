@@ -122,7 +122,7 @@ rectangular = error "for you to define"
 
 height :: Picture -> Int
 
-height = error "for you to define"
+height p = length p
 
 -- Extended exercise: positioned pictures
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

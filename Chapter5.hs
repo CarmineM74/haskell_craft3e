@@ -411,6 +411,17 @@ books       :: Database -> Person -> [Book]
 books dBase findPerson
   = [ book | (person,book) <- dBase , person==findPerson ]
 
+-- 5.28
+
+borrowers   :: Database -> Book -> [Person]
+borrowers dBase findBook = [person | (person,book) <- dBase, book == findBook] 
+
+borrowed    :: Database -> Book -> Bool
+borrowed dBase book = length (borrowers dBase book) > 0
+
+numBorrowed :: Database -> Person -> Int
+numBorrowed dBase person = length (books dBase person)
+
 -- Making a loan is done by adding a pair to the database.
 
 makeLoan   :: Database -> Person -> Book -> Database

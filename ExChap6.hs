@@ -90,3 +90,99 @@ rleUnpackRow xs = concat [ replicate cnt pixel | (cnt,pixel) <- xs]
 
 rleUnpack             :: RlePicture -> Picture
 rleUnpack p = [ rleUnpackRow l | l <- p]
+
+
+-- 6.29
+type Position = (Int,Int)
+type Image = (Picture,Position)
+
+makeImage             :: Picture -> Position -> Image
+makeImage pic pos = (pic,pos)
+
+-- 6.30
+changePosition        :: Image -> Position -> Image
+changePosition img newpos = (fst img, newpos)
+
+-- 6.31
+moveImage             :: Image -> Int -> Int -> Image
+moveImage img dx dy = (pic,new_pos)
+  where
+    pic = fst img
+    (cur_x,cur_y) = snd img
+    new_pos= (cur_x + dx, cur_y + dy)
+
+-- Supermarket billing Extended Exercise
+
+type Name     = String
+type Price    = Int
+type BarCode  = Int
+type Database = [ (BarCode,Name,Price) ]
+
+codeIndex :: Database
+codeIndex = [ (4719, "Fish Fingers" , 121),
+              (5643, "Nappies" , 1010),
+              (3814, "Orange Jelly", 56),
+              (1111, "Hula Hoops", 21),
+              (1112, "Hula Hoops (Giant)", 133),
+              (1234, "Dry Sherry, 1lt", 540)]
+
+type TillType = [BarCode]
+type BillType = [(Name,Price)]
+
+lineLength          :: Int
+lineLength = 30
+
+--makeBill            :: TillType -> BillType
+--formatBill          :: BillType -> String
+--produceBill         :: TillType -> String
+
+-- 6.39
+formatPence         :: Price -> String
+formatPence price = pounds ++ "." ++ padded_pence
+  where
+    pounds = show (div price 100)
+    pence = show (mod price 100)
+    padded_pence = (replicate (2 - (length pence)) '0') ++ pence
+
+-- 6.40
+computePadding        :: String -> String -> String
+computePadding prefix suffix = replicate (lineLength - (length prefix) - (length suffix)) '.'
+
+formatLine          :: (Name,Price) -> String
+formatLine (name,price) = name ++ (computePadding name formatted_price) ++ formatted_price ++ "\n"
+  where
+    formatted_price = formatPence price
+
+-- 6.41
+formatLines         :: [ (Name,Price) ] -> String
+formatLines ls = concat [formatLine l | l <- ls]
+
+-- 6.42
+makeTotal           :: BillType -> Price
+makeTotal bill = sum [price | (_,price) <- bill]
+
+-- 6.43
+formatTotal         :: Price -> String
+formatTotal total = "\n" ++ prefix ++ (computePadding prefix formatted_total)  ++ formatted_total
+  where
+    prefix = "Total"
+    formatted_total = formatPence total
+
+-- 6.44
+centerText          :: String -> Int -> Char -> String
+centerText text width padchar = padleft ++ text ++ padright
+  where
+    text_length = length text
+    padlr = div (width - text_length) 2
+    extra = if ((padlr * 2) + text_length) < width then 1 else 0
+    padleft = replicate (padlr+extra) padchar
+    padright = replicate padlr padchar
+
+
+formatBill          :: BillType -> String
+formatBill bill = bill_header ++ "\n\n" ++ bill_body ++ bill_total ++ "\n"
+  where
+    bill_header = centerText "Haskell Store" lineLength ' '
+    bill_total = formatTotal $ makeTotal bill
+    bill_body = formatLines bill
+    

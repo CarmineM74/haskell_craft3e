@@ -1,5 +1,5 @@
 module ExChap6 where
-import Prelude
+import Prelude hiding (lookup)
 import Pictures
 
 -- 6.1
@@ -186,3 +186,38 @@ formatBill bill = bill_header ++ "\n\n" ++ bill_body ++ bill_total ++ "\n"
     bill_total = formatTotal $ makeTotal bill
     bill_body = formatLines bill
     
+-- 6.45
+look                :: Database -> BarCode -> (Name,Price)
+look db barcode
+  | found == [] = ("Unknown Item",0)
+  | otherwise = head found
+  where
+    found = [(n,p) | (c,n,p) <- db, c == barcode]
+
+-- 6.46
+lookup              :: BarCode -> (Name,Price)
+lookup barcode = look codeIndex barcode
+
+-- 6.47
+makeBill            :: TillType -> BillType
+makeBill tills = [lookup t | t <- tills] 
+
+-- 6.48
+makeDiscount        :: BillType -> Price
+makeDiscount bill = (div (length bottles) 2) * 100
+  where
+    bottles = [(n,p) | (n,p) <- bill, n == "Dry Sherry, 1lt" ]
+
+formatDiscount      :: Price -> String
+formatDiscount discount = formatLine ("Discount", discount) 
+
+
+formatBill'         :: BillType -> String
+formatBill' bill = bill_header ++ "\n\n" ++ bill_body ++ total_discount ++ bill_total ++ "\n"
+  where
+    bill_header = centerText "Haskell Store" lineLength ' '
+    bill_body = formatLines bill
+    discount = makeDiscount bill
+    total_discount = if discount > 0 then "\n" ++ (formatDiscount discount) else ""
+    total = makeTotal bill
+    bill_total = formatTotal $ (total - discount) 

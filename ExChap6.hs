@@ -155,7 +155,10 @@ formatLine (name,price) = name ++ (computePadding name formatted_price) ++ forma
 
 -- 6.41
 formatLines         :: [ (Name,Price) ] -> String
-formatLines ls = concat [formatLine l | l <- ls]
+--formatLines ls = concat [formatLine l | l <- ls]
+
+-- 6.50
+formatLines ls = concat [formatLine l | l <- ls, (fst l) /= "Unknown Item"]
 
 -- 6.42
 makeTotal           :: BillType -> Price
@@ -221,3 +224,12 @@ formatBill' bill = bill_header ++ "\n\n" ++ bill_body ++ total_discount ++ bill_
     total_discount = if discount > 0 then "\n" ++ (formatDiscount discount) else ""
     total = makeTotal bill
     bill_total = formatTotal $ (total - discount) 
+
+-- 6.49
+add                 :: Database -> BarCode -> (Name,Price) -> Database
+add db code product
+  | look db code == ("Unknown Item",0) = (code,name,price): db 
+  | otherwise =  (code,name,price) : [(c,n,p) | (c,n,p) <- db, c /= code] 
+  where
+    name = fst product
+    price = snd product

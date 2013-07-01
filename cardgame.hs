@@ -94,4 +94,34 @@ checkPlay hs t = isPossible && isLegal
     (lead_player,(lead_suit,_)) = head t 
     can_follow = [ p | (p,(s,v)) <- t, s == lead_suit, playerHasCard p hs (s,v) ]
     cant_follow = [ p | (p,(s,v)) <- t, s /= lead_suit, not (playerHasSuit p hs lead_suit)]
-    
+
+-- 6.62
+data Team = NorthSouth | EastWest
+            deriving (Eq)
+
+teamFromPlayer  :: Player -> Team
+teamFromPlayer player
+  | elem player [North,South] = NorthSouth
+  | otherwise = EastWest
+
+scoreFromTeam   :: Team -> Int
+scoreFromTeam team
+  | team == NorthSouth = 1
+  | otherwise = -1
+
+winnerTeamFromScore   :: [Int] -> Team
+winnerTeamFromScore scores
+  | (sum scores) > 0 = NorthSouth
+  | otherwise = EastWest
+
+
+winnerNT      :: [Trick] -> Team
+winnerNT tricks  = winnerTeamFromScore scores
+  where
+    scores = [ scoreFromTeam $ teamFromPlayer $ winNT t | t <- tricks ]
+
+winnerT       :: Suit -> [Trick] -> Team
+winnerT trump tricks = winnerTeamFromScore scores 
+  where
+    scores = [ scoreFromTeam $ teamFromPlayer $ winT trump t | t <- tricks ]
+

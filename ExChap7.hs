@@ -1,6 +1,6 @@
 module ExChap7 where
 import Data.Char
-import Prelude hiding (product, and, or, reverse, unzip)
+import Prelude hiding (product, and, or, reverse, unzip, minimum, maximum)
 
 -- 7.1
 digits                  :: String -> String
@@ -69,3 +69,46 @@ unzip [] = ([],[])
 unzip (x:xs) = ([fst x] ++ (fst step),[snd x] ++ (snd step)) 
   where
     step = unzip xs
+
+-- 7.12
+dropWhileGt             :: Integer -> [Integer] -> [Integer]
+dropWhileGt _ [] = []
+dropWhileGt x (y:ys)
+  | x <= y = dropWhileGt x ys
+  | otherwise = y : dropWhileGt y ys
+
+minimum                 :: [Integer] -> Integer
+minimum [] = undefined
+minimum (x:xs) 
+  | rest == [] = x
+  | otherwise = minimum rest 
+  where
+    rest = dropWhileGt x xs
+    
+
+minimum'                 :: [Integer] -> Integer
+minimum' [] = undefined
+minimum' (x:xs)
+  | xs == [] = x
+  | x <= (minimum' xs) = x
+  | otherwise = minimum' xs
+
+-- 7.14
+isSorted                :: [Integer] -> Bool
+isSorted [] = True
+isSorted [x] = True
+isSorted (x:(q:p)) = (x <= q) && isSorted (q:p)
+
+-- 7.19
+
+insLex                  :: (Integer,Integer) -> [(Integer,Integer)] -> [(Integer, Integer)]
+insLex (a,b) [] = [(a,b)]
+insLex (a,b) ((c,d):ys)
+  | a < c = (a,b) : ((c,d):ys)
+  | a > c = (c,d) : insLex (a,b) ys
+  | (a == c) && (b <= d) = (a,b) : ((c,d):ys)
+  | (a == c) && (b > d) = (c,d) : insLex (a,b) ys
+
+iSortLex                :: [(Integer,Integer)] -> [(Integer,Integer)]
+iSortLex [] = []
+iSortLex (x:xs) = insLex x (iSortLex xs)

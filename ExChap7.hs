@@ -1,6 +1,7 @@
 module ExChap7 where
 import Data.Char
-import Prelude hiding (product, and, or, reverse, unzip, minimum, maximum)
+import Prelude hiding (product, and, or, reverse, unzip, minimum, maximum,
+                       drop, splitAt, take)
 
 -- 7.1
 digits                  :: String -> String
@@ -112,3 +113,91 @@ insLex (a,b) ((c,d):ys)
 iSortLex                :: [(Integer,Integer)] -> [(Integer,Integer)]
 iSortLex [] = []
 iSortLex (x:xs) = insLex x (iSortLex xs)
+
+
+-- 7.20
+
+take                    :: Int -> [a] -> [a]
+take 0 _  = []
+take _ [] = []
+take n (x:xs)
+  | n > 0         = x : take (n-1) xs
+take _ _          = error "ExChap7.take: negative argument"
+
+drop                    :: Int -> [a] -> [a]
+drop _ []         = []
+drop 0 xs         = xs
+drop n (x:xs)
+  | n > 0         = drop (n-1) xs
+  | otherwise     = error "ExChap7.drop: negative argument"
+
+splitAt                 :: Int -> [a] -> ([a], [a])
+splitAt _ []      = ([], [])
+splitAt n xs
+  | n > 0         = (take n xs, drop n xs)
+  | otherwise     = ([], xs)
+
+
+-- 7.24
+qSort                   :: [Integer] -> [Integer]
+qSort []          = []
+qSort (x:xs)      = qSort [ y | y <- xs, y <= x] ++ [x] ++ qSort [ y | y <- xs, y > x]
+
+
+qSortDesc               :: [Integer] -> [Integer]
+qSortDesc xs      = reverse $ qSort xs
+
+qSortDesc'              :: [Integer] -> [Integer]
+qSortDesc' []     = []
+qSortDesc' (x:xs) = qSortDesc' [ y | y <- xs, y > x] ++ [x] ++ qSortDesc' [ y | y <- xs, y <= x]
+
+qSortDescNoDups         :: [Integer] -> [Integer]
+qSortDescNoDups []     = []
+qSortDescNoDups (x:xs) = qSortDescNoDups [ y | y <- xs, y > x] ++ [x] ++ qSortDescNoDups [ y | y <- xs, y < x]
+
+-- 7.25
+
+indicesOf         :: String -> String -> [Integer]
+indicesOf [] _    = []
+indicesOf _ []    = []
+indicesOf s1 s2   = [fromIntegral pos | pos <- [0..(length s2)-1], elem (s2 !! pos) s1]
+
+dropUntilFound    :: Char -> String -> String
+dropUntilFound _ []   = []
+dropUntilFound '\0' _ = []
+dropUntilFound c (x:xs)
+  | c == x            = (x:xs)
+  | otherwise         = dropUntilFound c xs
+
+-- Sublist
+-- A list is a sublist of another if the elements of the first list
+-- occur in the second in the same order
+-- Ex: "ship" is a sublist of "Fish & Chips" but not of "hippies"
+sublist           :: String -> String -> Bool
+sublist s1 s2     
+  | length s1 <= length s2 = isSorted indices && (length indices >= length s1)
+  | otherwise             = False
+  where
+    indices = indicesOf s1 (dropUntilFound (head s1) s2)
+
+-- A list is a subsequence of another list if the elements occur in the
+-- second next to each other
+-- Ex: "Chips" is a subsequence of "Fish & Chips" but not of "Chimps"
+subsequence       :: String -> String -> Bool
+subsequence s1 s2 
+  | length s1 <= length s2  = (take len found) == s1
+  | otherwise              = False
+  where
+    len   = length s1
+    found = dropUntilFound (head s1) s2
+
+data Subkind = Sublist | Subsequence | Neither
+                deriving (Show)
+
+-- Guard order is relevant since a subsequence has stricter requirements
+-- than a sublist. A subsequence is also a sublist but not vice versa.
+sublistOrSubsequence  :: String -> String -> Subkind
+sublistOrSubsequence s1 s2
+  | subsequence s1 s2 = Subsequence
+  | sublist s1 s2     = Sublist
+  | otherwise         = Neither

@@ -256,7 +256,13 @@ getLine len (w:ws)
 
 dropLine :: Int -> [Word] -> Line
 
-dropLine = dropLine 	-- DUMMY DEFINITION
+dropLine _ [] = []
+dropLine len (w:ws)
+  | length w <= len = restOfLine
+  | otherwise = (w:ws)
+  where
+    newlen = len - (length w) + 1
+    restOfLine = dropLine newlen ws
 
 -- Splitting into lines.
 
@@ -270,3 +276,27 @@ splitLines ws
 
 fill :: String -> [Line]
 fill = splitLines . splitWords
+
+-- 7.28
+joinLine :: Line -> String
+joinLine [] = ""
+joinLine (w:[]) = w
+joinLine (w:ws) = w ++ " " ++ joinLine ws
+
+-- 7.29
+joinLines :: [Line] -> String
+joinLines [] = ""
+joinLines ls = concat [ joinLine l ++ "\n" | l <- ls ]
+
+-- 7.31
+joinLine' :: Line -> String
+joinLine' [] = ""
+joinLine' ws = concat [ a ++ b | (a,b) <- (zip ws spaces) ] ++ padding
+  where
+    wordCount = length ws
+    spaces = take wordCount $ repeat spaceChunks 
+    totalLen = sum [fromIntegral $ length w | w <- ws] 
+    residualLen = lineLen - (fromInteger totalLen)
+    (chunkW,chunkRem) = (div residualLen wordCount, rem residualLen wordCount)
+    spaceChunks = concat $ take chunkW $ repeat " "
+    padding = concat $ take chunkRem $ repeat " "

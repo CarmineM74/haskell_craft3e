@@ -300,3 +300,32 @@ joinLine' ws = concat [ a ++ b | (a,b) <- (zip ws spaces) ] ++ padding
     (chunkW,chunkRem) = (div residualLen wordCount, rem residualLen wordCount)
     spaceChunks = concat $ take chunkW $ repeat " "
     padding = concat $ take chunkRem $ repeat " "
+
+-- 7.34
+indexOf :: String -> String -> Int
+indexOf _ [] = (-1) 
+indexOf "" _ = (-1)
+indexOf (c:cs) (x:xs)
+  | (c == x) && (c:cs) == rest = 0
+  | otherwise = 1 + indexOf (c:cs) xs
+  where
+    len = length (c:cs)
+    rest = take len (x:xs)
+
+subsequence       :: String -> String -> Bool
+subsequence s1 s2 
+  | (length s1 <= length s2) && (pos >= 0)  = found == s1
+  | otherwise              = False
+  where
+    pos = indexOf s1 s2
+    found = take (length s1) (drop pos s2)
+
+subst :: String -> String -> String -> String
+subst _ _ "" = ""
+subst oldSub newSub st 
+  | subsequence oldSub st = before ++ newSub ++ (drop len after)
+  | otherwise = st
+  where
+    len = length oldSub
+    (before,after) = splitAt subPos st
+    subPos = indexOf oldSub st 

@@ -183,6 +183,8 @@ sublist s1 s2
 -- A list is a subsequence of another list if the elements occur in the
 -- second next to each other
 -- Ex: "Chips" is a subsequence of "Fish & Chips" but not of "Chimps"
+-- WRONG DESIGN
+-- Correct version is in Chapter7.hs
 subsequence       :: String -> String -> Bool
 subsequence s1 s2 
   | length s1 <= length s2  = (take len found) == s1

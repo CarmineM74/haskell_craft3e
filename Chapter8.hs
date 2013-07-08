@@ -146,19 +146,52 @@ sLostLast start moves
   | otherwise = lose (head moves)
 
 -- 8.4
+
+playToWin :: Move -> Move
+playToWin move =
+  case outcome first_available_move second_available_move of
+    1 -> first_available_move
+    -1 -> second_available_move
+  where
+    available_moves = [m | m <- [Rock,Paper,Scissors], m /= move]
+    (first_available_move, second_available_move) = (head available_moves,last available_moves)
+
 sRandButTwo :: Strategy
 sRandButTwo moves
   | (length moves >= 2) && (not sametwo) = convertToMove $ randInt 3
-  | otherwise =
-      case outcome first_available_move second_available_move of
-        1 -> first_available_move
-        -1 -> second_available_move
+  | otherwise = playToWin last_move
   where
     last_move = head moves
-    available_moves = [m | m <- [Rock,Paper,Scissors], m /= last_move]
-    (first_available_move, second_available_move) = (head available_moves,last available_moves)
-
     sametwo = last_move == (moves !! 1)
+
+-- 8.5
+
+computeFreqsAcc :: (Int, Int, Int) -> [Move] -> (Int, Int, Int)
+computeFreqsAcc (fr,fp,fs) [] = (fr,fp,fs)
+computeFreqsAcc (fr,fp,fs) (m:ms) = 
+  case m of
+    Rock -> computeFreqsAcc (fr+1,fp,fs) ms
+    Paper -> computeFreqsAcc (fr,fp+1,fs) ms
+    Scissors -> computeFreqsAcc (fr,fp,fs+1) ms
+
+computeFreqs  :: [Move] -> [(Move, Int)]
+computeFreqs moves = [(Rock,f_rock),(Paper,f_paper),(Scissors,f_scissors)]
+  where
+    (f_rock,f_paper,f_scissors) = computeFreqsAcc (0,0,0) moves
+
+leastFreqAcc :: (Move, Int) -> [(Move, Int)] -> (Move, Int)
+leastFreqAcc (am, af) [] = (am, af)
+leastFreqAcc (am, af) ((m,f):ms)
+  | af <= f = leastFreqAcc (am, af) ms
+  | otherwise = leastFreqAcc (m, f) ms
+
+leastFreq     :: [(Move, Int)] -> (Move, Int)
+leastFreq (m:ms) = leastFreqAcc m (m:ms)
+
+sFreqBased :: Strategy
+sFreqBased moves = playToWin least_freq_move
+  where
+    (least_freq_move, freq) = leastFreq $ computeFreqs moves
 
 -- Echo the previous move; also have to supply starting Move.
 

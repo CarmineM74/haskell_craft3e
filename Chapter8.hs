@@ -62,16 +62,19 @@ convertMove 'S' = Scissors
 --   +1 for first player wins
 --   -1 for second player wins
 --    0 for a draw
-
+-- 8.1
 outcome :: Move -> Move -> Integer
 
-outcome = outcome -- dummy def
+outcome p1 p2
+  | p1 == beat p2 = 1
+  | p2 == beat p1 = (-1)
+  | otherwise = 0
 
 -- Outcome of a tournament
-
+-- 8.2
 tournamentOutcome :: Tournament -> Integer
 
-tournamentOutcome = tournamentOutcome -- dummy definition
+tournamentOutcome t = sum [outcome p1 p2 | (p1,p2) <- zip (fst t) (snd t) ]
 
 -- Calculating the Move to beat or lose against the 
 -- argument Move.
@@ -131,10 +134,31 @@ cycle moves
       2 -> Scissors
 
 -- Play the move that would have lost the opponent's last play.
+-- 8.3
+sWonLast  :: Move -> Strategy
+sWonLast start moves
+  | moves == [] = beat start
+  | otherwise = beat (head moves)
 
 sLostLast :: Move -> Strategy
+sLostLast start moves
+  | moves == [] = lose start
+  | otherwise = lose (head moves)
 
-sLostLast move = rock -- dummy definition --- for you to complete
+-- 8.4
+sRandButTwo :: Strategy
+sRandButTwo moves
+  | (length moves >= 2) && (not sametwo) = convertToMove $ randInt 3
+  | otherwise =
+      case outcome first_available_move second_available_move of
+        1 -> first_available_move
+        -1 -> second_available_move
+  where
+    last_move = head moves
+    available_moves = [m | m <- [Rock,Paper,Scissors], m /= last_move]
+    (first_available_move, second_available_move) = (head available_moves,last available_moves)
+
+    sametwo = last_move == (moves !! 1)
 
 -- Echo the previous move; also have to supply starting Move.
 

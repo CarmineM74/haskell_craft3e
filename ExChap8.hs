@@ -1,4 +1,5 @@
 module ExChap8 where
+import Data.Char
 
 -- 8.10
 
@@ -71,5 +72,78 @@ sumNvalues = do
               let s = sum vs
               putStrLn ("The sum is " ++ (show s))
 
-              
+-- 8.14
+getLinesAcc :: [String] -> IO [String]
+getLinesAcc lines = do
+                      line <- getLine
+                      if line == "" then
+                        return lines
+                      else
+                        getLinesAcc (line:lines)
+
+copyToOutput :: IO [String]
+copyToOutput = do
+                lines <- getLinesAcc []
+                return lines
+
+analyseLines :: [String] -> (Int,Int,Int)
+analyseLines [] = (0,0,0)
+analyseLines lines = (nr_lines,nr_words,nr_chars)
+  where
+    nr_lines = length lines
+    nr_words = sum [ length $ words l | l <- lines ]
+    nr_chars = length (concat lines)
+
+
+dumpStats :: (Int,Int,Int) -> IO ()
+dumpStats (nr_lines,nr_words,nr_chars) =  do
+                                            putStrLn ("Total nr of lines: " ++ (show nr_lines))
+                                            putStrLn ("Total nr of words: " ++ (show nr_words))
+                                            putStrLn ("Total nr of chars: " ++ (show nr_chars))
+
+wc :: IO ()
+wc = do
+      lines <- copyToOutput
+      let stats = analyseLines lines
+      dumpStats stats
+
+-- 8.15
+removeClutter :: String -> String
+removeClutter s = [toLower c | c <- s, (isLetter c) || (isNumber c)]
+
+palindromeChecker :: IO String 
+palindromeChecker = do
+                      l <- getLine
+                      if l == "" then
+                        return l
+                      else do
+                            let l' = concat $ words l
+                            let cleaned = removeClutter l'
+                            putStr "The text entered "
+                            if (isPalindrome cleaned) == True then
+                              putStrLn "is palindrome"
+                            else
+                              putStrLn "is not a palindrome"
+                            return l
+
+-- 8.16
+preamble :: IO ()
+preamble = do
+            putStrLn "This program will check wether a line of entered text is a palindrome or not."
+            putStrLn "Each line is terminated by pressing the return key."
+            putStrLn "After each line entered you will be notified of the test's result."
+            putStrLn "You can quit the program by entering an empty line."
+
+doRepeatedlyPalindromeChecker :: IO ()
+doRepeatedlyPalindromeChecker = do
+                                l <- palindromeChecker
+                                if l == "" then
+                                  return ()
+                                else
+                                  doRepeatedlyPalindromeChecker
+
+repeatedlyPalindromeChecker :: IO ()
+repeatedlyPalindromeChecker = do
+                                preamble
+                                doRepeatedlyPalindromeChecker
 

@@ -147,3 +147,18 @@ repeatedlyPalindromeChecker = do
                                 preamble
                                 doRepeatedlyPalindromeChecker
 
+-- 8.17
+
+getIntsAcc :: [Integer] -> IO [Integer]
+getIntsAcc values = do
+                  value <- getInt
+                  if value == 0 then
+                    return values
+                  else
+                    getIntsAcc (value:values)
+
+computeIntSum :: IO ()
+computeIntSum = do
+                  values <- getIntsAcc []
+                  let result = sum values
+                  putStrLn ("The sum is: " ++ (show result))

@@ -468,11 +468,16 @@ step :: Strategy -> Strategy -> Tournament -> Tournament
 step strategyA strategyB ( movesA, movesB )
      = ( strategyA movesB : movesA , strategyB movesA : movesB )
 
+-- 8.20
+playSvsSAcc :: Tournament -> Integer -> Strategy -> Strategy -> Tournament
+playSvsSAcc t@(ms,ys) n sa sb
+  | n > 0 = playSvsSAcc new_t (n-1) sa sb
+  | otherwise = t
+  where
+    new_t = step sa sb t
+
 playSvsS :: Strategy -> Strategy -> Integer -> Tournament
-
-playSvsS strategyA strategyB n
-     = error "exercise"
-
+playSvsS strategyA strategyB n = playSvsSAcc ([],[]) n strategyA strategyB
 
 --
 -- Playing interactively

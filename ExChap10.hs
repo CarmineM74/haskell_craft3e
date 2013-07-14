@@ -1,5 +1,6 @@
 module ExChap10 where
-import Data.List
+import Prelude hiding (init, last)
+import Data.List hiding (init, last)
 
 -- 10.2
 alwaysOne :: a -> Integer
@@ -79,3 +80,22 @@ double n = 2 * n
 
 powerTwo :: Integer -> Integer
 powerTwo n = iter n double 1
+
+-- 10.13
+sumOfSquares :: [Integer] -> Integer
+sumOfSquares ns = foldr (+) 0 $ map (^2) ns
+
+-- 10.14
+sumOfSquaresPositives :: [Integer] -> Integer
+sumOfSquaresPositives = sumOfSquares . filter (>0) 
+
+-- 10.15
+--last :: [a] -> a
+last xs = foldr f [] xs
+  where
+    f x a
+      | a == [] = x
+      | otherwise = a
+
+--init :: [a] -> [a]
+--init xs = foldr (\x a -> if a == [] then [] else x:a) [] xs

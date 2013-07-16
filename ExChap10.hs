@@ -90,12 +90,18 @@ sumOfSquaresPositives :: [Integer] -> Integer
 sumOfSquaresPositives = sumOfSquares . filter (>0) 
 
 -- 10.15
---last :: [a] -> a
-last xs = foldr f [] xs
+last :: [a] -> a
+--last xs = head $ foldr f [] xs
+--  where
+--    f x [] = [x]
+--    f _ a = a
+last xs = head $ fst $ foldr f ([],len) xs
   where
-    f x a
-      | a == [] = x
-      | otherwise = a
+    len = length xs
+    f x (a,l) = if l == len then (x:a,l-1) else (a,l-1)
 
---init :: [a] -> [a]
---init xs = foldr (\x a -> if a == [] then [] else x:a) [] xs
+init :: [a] -> [a]
+init xs = fst $ foldr f ([],len) xs
+  where
+    len = length xs
+    f x (a,l) = if l == len then (a,l-1) else (x:a,l-1)

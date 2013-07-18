@@ -110,3 +110,22 @@ unzip :: [(a,b)] -> ([a],[b])
 unzip xs = foldr f ([],[]) xs
   where
     f (x,y) (as,bs) = (x:as,y:bs)
+
+-- 10.18
+filterFirst :: (a -> Bool) -> [a] -> [a]
+filterFirst p xs = reverse $ fst $ foldr f ([],False) $ reverse xs
+  where
+    f x (ys,True) = (x:ys,True)
+    f x (ys,False)
+      | p x = (x:ys,False)
+      | otherwise = (ys,True)
+
+--returnLoan   :: Database -> Person -> Book -> Database
+--returnLoan dBase pers bk = filterFirst isNotLoaned dBase
+--  where
+--    isNotLoaned pair = pair /= (pers,bk)
+
+-- 10.19
+filterLast :: (a -> Bool) -> [a] -> [a]
+filterLast p xs = filterFirst p (reverse xs)
+

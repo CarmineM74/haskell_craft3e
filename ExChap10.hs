@@ -129,3 +129,43 @@ filterFirst p xs = reverse $ fst $ foldr f ([],False) $ reverse xs
 filterLast :: (a -> Bool) -> [a] -> [a]
 filterLast p xs = filterFirst p (reverse xs)
 
+-- 10.20
+
+addTen :: Integer -> Integer
+addTen x = x + 10
+
+switchMap :: (a -> b) -> (a -> b) -> [a] -> [b]
+switchMap f g xs = foldr h [] elems
+  where
+    elems = zip xs [1..length xs] 
+    h (x,pos) a = alternateMapping f g (x,pos) : a
+    alternateMapping f g (x,pos) 
+      | odd pos = f x
+      | otherwise = g x
+
+switchMap' :: (a -> b) -> (a -> b) -> [a] -> [b]
+switchMap' f g xs = fst $ foldr alternateMapping ([],len) xs
+  where
+    len = length xs
+    alternateMapping x (xs,l)
+      | odd l = (f x : xs, l-1)
+      | otherwise = (g x : xs, l-1)
+
+-- 10.21
+split :: [a] -> ([a],[a])
+split xs = (vs,vs')
+  where
+    len = length xs
+    (vs,vs',_) = foldr f ([],[],len) xs
+    f x (as,bs,l)
+      | odd l = (x:as,bs,l-1)
+      | otherwise = (as,x:bs,l-1)
+
+merge :: ([a],[a]) -> [a]
+merge (xs,ys) = undefined
+
+switchMap'' :: (a -> b) -> (a -> b) -> [a] -> [b]
+switchMap'' f g xs = concat $ transpose [map f ys, map g zs]
+  where
+    (ys,zs) = split xs
+

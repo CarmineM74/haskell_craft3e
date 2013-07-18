@@ -1,6 +1,6 @@
 module ExChap10 where
-import Prelude hiding (init, last)
-import Data.List hiding (init, last)
+import Prelude hiding (init, last, unzip)
+import Data.List hiding (init, last, unzip)
 
 -- 10.2
 alwaysOne :: a -> Integer
@@ -105,3 +105,8 @@ init xs = fst $ foldr f ([],len) xs
   where
     len = length xs
     f x (a,l) = if l == len then (a,l-1) else (x:a,l-1)
+
+unzip :: [(a,b)] -> ([a],[b])
+unzip xs = foldr f ([],[]) xs
+  where
+    f (x,y) (as,bs) = (x:as,y:bs)

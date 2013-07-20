@@ -162,7 +162,10 @@ split xs = (vs,vs')
       | otherwise = (as,x:bs,l-1)
 
 merge :: ([a],[a]) -> [a]
-merge (xs,ys) = undefined
+merge ([],[]) = []
+merge (x:xs,[]) = x:merge(xs,[])
+merge ([],y:ys) = y:merge([],ys)
+merge (x:xs,y:ys) = x:y:merge(xs,ys) 
 
 switchMap'' :: (a -> b) -> (a -> b) -> [a] -> [b]
 switchMap'' f g xs = concat $ transpose [map f ys, map g zs]

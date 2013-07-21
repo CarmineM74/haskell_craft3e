@@ -172,3 +172,49 @@ switchMap'' f g xs = concat $ transpose [map f ys, map g zs]
   where
     (ys,zs) = split xs
 
+-- 10.24
+getUntil :: (a -> Bool) -> [a] -> [a]
+getUntil p [] = []
+getUntil p (x:xs)
+  | p x = []
+  | otherwise = x : getUntil p xs
+
+dropUntil :: (a -> Bool) -> [a] -> [a]
+dropUntil p [] = []
+dropUntil p (x:xs)
+  | p x = x:xs
+  | otherwise = dropUntil p xs
+
+-- 10.25
+whitespace :: String
+whitespace = ['\n','\t',' ']
+
+dropSpace :: String -> String
+dropSpace xs = dropUntil p xs
+  where
+    p x = not $ elem x whitespace
+
+-- 10.26
+-- Non capisco cosa desidera ottenere :(
+
+-- 10.27
+-- getLine :: Int -> [[a]] -> [[a]]
+-- Questo e' il tipo polimorfico della funzione.
+-- Il test nella funzione getLine del capitolo 7 
+-- confronta la lunghezza della parola in esame con quella
+-- residua per la costruzione della riga. Se c'e' spazio sufficiente
+-- per includere la parola nella riga in costruzione, allora si procede.
+-- Altrimenti si considera la riga conclusa.
+
+-- Il test puo' essere generalizzato come segue:
+getLineWhile :: Int -> ([a] -> Int -> Bool) -> [[a]] -> [[a]]
+getLineWhile _ _ [] = []
+getLineWhile len p (w:ws)
+  | p w len = w : getLineWhile newlen p ws
+  | otherwise = []
+  where
+    newlen = len - (length w) - 1
+
+-- No il tipo della funzione non diventa piu' generale perche'
+-- l'unica variazione e' l'esternalizzazione del test. I tipi coinvolti
+-- rimangono gli stessi.

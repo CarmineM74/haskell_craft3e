@@ -1,6 +1,7 @@
 module ExChap10 where
 import Prelude hiding (init, last, unzip)
 import Data.List hiding (init, last, unzip)
+import Pictures
 
 -- 10.2
 alwaysOne :: a -> Integer
@@ -218,3 +219,10 @@ getLineWhile len p (w:ws)
 -- No il tipo della funzione non diventa piu' generale perche'
 -- l'unica variazione e' l'esternalizzazione del test. I tipi coinvolti
 -- rimangono gli stessi.
+
+-- 10.29
+invertChar :: Char -> Char
+invertChar ch = if ch=='.' then '#' else '.'
+
+invertColour :: Picture -> Picture
+invertColour pic = map (map invertChar) pic

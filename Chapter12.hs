@@ -76,6 +76,13 @@ makePicture w h pts = foldr (\(x,y) p -> drawDot x y p) empty pts
   where
     empty = replicate h (replicate w '.')
 
+-- 12.4
+pictureToRep :: Picture -> (Int,Int,[(Int,Int)])
+pictureToRep p = (w,h,foldr (\r a -> (rowIdxs r (p!!r))++a) [] [0..(h-1)])
+  where
+    (w,h) = (length (p!!0), length p)
+    rowIdxs rownum row = map (\idx -> (idx+1,rownum+1)) $ findIndices (=='#') row
+
 -- Regular expressions
 
 type RegExp = String -> Bool

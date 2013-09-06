@@ -14,7 +14,7 @@ module Chapter12 where
 
 import Pictures hiding (flipH,rotate,flipV,beside,invertColour,
 			superimpose,printPicture)
-
+import Data.List
 
 -- Revisiting the Pictures example, yet again.
 
@@ -48,6 +48,20 @@ combineChar = combineChar
 
 printPicture :: Picture -> IO ()
 printPicture = putStr . concat . map (++"\n")
+
+-- Ex 12.1
+alternatePic :: Picture -> Picture -> Int -> Picture
+alternatePic p1 p2 n
+  | even n = p1
+  | otherwise = p2
+
+-- chessBoard could be simplified by finding a general high order function
+-- to pass to foldr which accepts a (Picture -> Picture) function as
+-- a parameter (above or beside are such functions)
+chessBoard :: Int -> Picture
+chessBoard n = foldr (\x a -> above a (alternatePic (invertColour line) line x)) line [1..n-1]
+  where
+    line = foldr (\x a -> beside a (alternatePic white black x)) black [1..n-1]
 
 -- Regular expressions
 

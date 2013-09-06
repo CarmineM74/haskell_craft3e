@@ -63,6 +63,19 @@ chessBoard n = foldr (\x a -> above a (alternatePic (invertColour line) line x))
   where
     line = foldr (\x a -> beside a (alternatePic white black x)) black [1..n-1]
 
+-- Ex 12.3
+drawDot :: Int -> Int -> Picture -> Picture
+drawDot x y p = (take (y-1) p) ++ [row'] ++ (drop y p)
+  where
+    row = p !! y
+    (lefts,rights) = splitAt x row
+    row' = (init lefts) ++ ['#'] ++ rights
+
+makePicture :: Int -> Int -> [(Int,Int)] -> Picture
+makePicture w h pts = foldr (\(x,y) p -> drawDot x y p) empty pts
+  where
+    empty = replicate h (replicate w '.')
+
 -- Regular expressions
 
 type RegExp = String -> Bool

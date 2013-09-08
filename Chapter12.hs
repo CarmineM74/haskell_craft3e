@@ -15,6 +15,7 @@ module Chapter12 where
 import Pictures hiding (flipH,rotate,flipV,beside,invertColour,
 			superimpose,printPicture)
 import Data.List
+import Data.Char
 
 -- Revisiting the Pictures example, yet again.
 
@@ -119,6 +120,18 @@ star p = epsilon ||| (p <**> star p)
 -- is OK as long as p can't have epsilon match
 
 fsplits xs = tail (splits xs)
+
+-- 12.17
+range :: Char -> Char -> RegExp
+range start stop =
+  -- \x -> and $ map ((flip elem) (map chr [ord start .. ord stop])) x
+  \x -> elem x [[chr c] | c <- [ord start .. ord stop]]
+
+numbers :: RegExp
+numbers = (range '1' '9')<**>(star (range '0' '9'))
+
+fractionals :: RegExp
+fractionals = numbers<**>(char '.')<**>(star (char '0'))<**>numbers<**>(range '1' '9')
 
 --
 -- Case studies: functions as data

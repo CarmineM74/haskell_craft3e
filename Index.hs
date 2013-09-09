@@ -16,7 +16,6 @@ import Chapter11 ((>.>))
 import qualified Chapter7
 
 
-
 -- Example: creating an index
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -117,3 +116,15 @@ shorten
   = filter sizer 
     where
     sizer (nl,wd) = length wd > 3
+
+-- 12.30
+lines' :: String -> [String]
+lines' [] = []
+lines' xs 
+  | word /= "" = word : next_word
+  | otherwise = next_word
+  where
+    notNewline = \x -> x /= '\n'
+    word = takeWhile notNewline xs
+    next_word = lines' (drop 1 $ dropWhile notNewline xs)
+

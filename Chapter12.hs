@@ -163,16 +163,16 @@ int n = n (+1) 0
 -- sends representation of n to rep. of n+1
 
 succ :: Natural a -> Natural a
-succ = error "succ"
+succ n = \f -> f . (n f) 
 
 -- sends reps. of n and m to rep. of n+m
 
 plus :: Natural a -> Natural a -> Natural a
-plus = error "plus"
+plus n m = \f -> n f . (m f)
 
 -- sends reps. of n and m to rep. of n*m
 times :: Natural a -> Natural a -> Natural a
-times = error "times"
+times n m = \f -> (n . m) f
 
 -- Creating an index
 -- ^^^^^^^^^^^^^^^^^

@@ -133,6 +133,15 @@ numbers = (range '1' '9')<**>(star (range '0' '9'))
 fractionals :: RegExp
 fractionals = numbers<**>(char '.')<**>(star (char '0'))<**>numbers<**>(range '1' '9')
 
+-- 12.18
+countBetween :: Int -> Int -> RegExp -> RegExp
+countBetween min max re =
+  \x -> elem (length [1 | c <- x, re [c]]) [min .. max] 
+
+maxLength :: Int -> RegExp -> RegExp
+maxLength len re =
+  \x -> re x && (length x <= len)
+
 --
 -- Case studies: functions as data
 --

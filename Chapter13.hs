@@ -80,6 +80,20 @@ numEqual xs x = foldr (\v acc -> if v == x then acc+1 else acc) 0 xs
 member' :: Eq a => a -> [a] -> Bool
 member' x xs = numEqual xs x > 0
 
+-- 13.3
+oneLookupFirst :: Eq a => [(a,b)] -> a -> b
+oneLookupFirst [] _ = error "Cannot lookup over an empty list"
+oneLookupFirst xs value = 
+  case lookupFirst xs value of
+    [] -> error "value not found"
+    (y:ys) -> y
+
+oneLookupSecond :: Eq b => [(a,b)] -> b -> a
+oneLookupSecond xs value = oneLookupFirst xs' value
+  where
+    xs' = map swapCouple xs
+    swapCouple (x,y) = (y,x)
+
 -- Signatures and Instances
 -- ^^^^^^^^^^^^^^^^^^^^^^^^
 

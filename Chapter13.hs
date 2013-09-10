@@ -73,6 +73,12 @@ lookupFirst ws x
 -- borrowed    :: Eq b => [ (a,b) ] -> b -> Bool
 -- numBorrowed :: Eq a => [ (a,b) ] -> a -> Int
 
+-- 13.2
+numEqual :: Eq a => [a] -> a -> Int
+numEqual xs x = foldr (\v acc -> if v == x then acc+1 else acc) 0 xs
+
+member' :: Eq a => a -> [a] -> Bool
+member' x xs = numEqual xs x > 0
 
 -- Signatures and Instances
 -- ^^^^^^^^^^^^^^^^^^^^^^^^

@@ -14,6 +14,7 @@ module Chapter14_1 where
 import Prelude hiding (Either(..),either,Maybe(..),maybe)
 import Test.QuickCheck
 import Control.Monad
+import Data.List
 
 -- Algebraic types
 -- ^^^^^^^^^^^^^^^
@@ -63,7 +64,10 @@ instance Eq Temp where
 
 data Expr = Lit Integer |
             Add Expr Expr |
-            Sub Expr Expr
+            Sub Expr Expr |
+-- 14.5
+            Mul Expr Expr |
+            Div Expr Expr 
                 deriving (Show,Eq)
 
 -- Three examples from Expr.
@@ -79,6 +83,19 @@ eval :: Expr -> Integer
 eval (Lit n)     = n
 eval (Add e1 e2) = (eval e1) + (eval e2)
 eval (Sub e1 e2) = (eval e1) - (eval e2)
+-- 14.5
+eval (Mul e1 e2) = (eval e1) * (eval e2)
+eval (Div e1 e2)
+  | eval_e2 == 0 = error "Division by zero!"
+  | otherwise = eval e1 `div` eval_e2
+  where
+    eval_e2 = eval e2
+
+-- 14.4
+sizeE :: Expr -> Integer
+sizeE (Lit _) = 0
+sizeE (Add e1 e2) = 1 + (sizeE e1) + (sizeE e2)
+sizeE (Sub e1 e2) = 1 + (sizeE e1) + (sizeE e2)
 
 -- Showing an expression.
 
@@ -123,6 +140,52 @@ occurs (Node n t1 t2) p
   | n==p        = 1 + occurs t1 p + occurs t2 p
   | otherwise   =     occurs t1 p + occurs t2 p
 
+
+-- 14.9
+leftTree :: NTree -> NTree
+leftTree NilT = NilT
+leftTree (Node n t1 t2) = Node n (leftTree t1) NilT
+
+rightTree :: NTree -> NTree
+rightTree NilT = NilT
+rightTree (Node n t1 t2) = Node n NilT (rightTree t2)
+
+-- 14.10
+isElemTree :: Integer -> NTree -> Bool
+isElemTree _ NilT = False
+isElemTree x (Node n t1 t2)
+  | x == n = True
+  | otherwise = isElemTree x t1 || isElemTree x t2
+
+treeToList :: NTree -> [Integer]
+treeToList NilT = []
+treeToList (Node n t1 t2) = n:(treeToList t1)++(treeToList t2)
+
+isElemTree' :: Integer -> NTree -> Bool
+isElemTree' x t = elem x t_list
+  where
+    t_list = treeToList t
+
+-- 14.11
+minElemTree :: NTree -> Integer
+minElemTree NilT = error "Tree is empty!"
+minElemTree t = (head . sort) $ treeToList t
+
+maxElemTree :: NTree -> Integer
+maxElemTree NilT = error "Tree is empty!"
+maxElemTree t = (head . reverse . sort) $ treeToList t
+
+-- 14.12
+reflect :: NTree -> NTree
+reflect NilT = NilT
+reflect (Node n t1 t2) = Node n (reflect t2) (reflect t1) 
+
+-- 14.13
+collapse, sortTree :: NTree -> [Integer]
+collapse NilT = []
+collapse (Node n t1 t2) = (collapse t1)++[n]++(collapse t2)
+
+sortTree = sort . collapse
 
 -- Rearranging expressions
 -- ^^^^^^^^^^^^^^^^^^^^^^^

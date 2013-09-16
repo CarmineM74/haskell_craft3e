@@ -15,6 +15,7 @@ import Prelude hiding (Either(..),either,Maybe(..),maybe)
 import Chapter14_1 hiding (Name,NTree(..))
 import Test.QuickCheck
 import Control.Monad
+import Data.List
 
 -- Algebraic types, part 2
 -- ^^^^^^^^^^^^^^^^^^^^^^^
@@ -164,21 +165,13 @@ countLeaves (Leaf n) = 1
 countLeaves (Gnode []) = 0
 countLeaves (Gnode branches) = sum $ map countLeaves branches
 
-isGTNode :: (GTree a) -> Bool
-isGTNode (Leaf _) = False
-isGTNode (Gnode _) = True
-
-countGTNodes :: (GTree a) -> Int
-countGTNodes (Leaf _) = 0
-countGTNodes (Gnode bs) = length $ filter isGTNode bs
-
 depthGTBranch :: Int -> (GTree a) -> Int
 depthGTBranch cur_depth (Leaf _) = cur_depth
-depthGTBranch cur_depth (GNode bs) = map (depthGTBranch (cur_depth+1)) bs ... 
+depthGTBranch cur_depth (Gnode bs) = head $ map (depthGTBranch (cur_depth+1)) bs 
 
 depthGTree :: (GTree a) -> Int
 depthGTree (Leaf _) = 0
-depthGTree (Gnode bs) = map depthGTBranch 1 
+depthGTree (Gnode bs) = (head . reverse . sort) $ map (depthGTBranch 1) bs
 
 -- Case study: Program Errors
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^

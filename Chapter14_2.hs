@@ -125,10 +125,60 @@ applyLeft :: (a -> c) -> Either a b -> c
 applyLeft f (Left x)  = f x
 applyLeft f (Right _) = error "applyLeft applied to Right"
 
+-- 14.17
+twist :: Either a b -> Either b a
+twist (Left a) = Right a
+twist (Right b) = Left b
+
+-- 14.18
+applyLeft' :: (a -> c) -> Either a b -> c
+applyLeft' f e = either f (\v -> error "applyLeft' applied to Right") e
+
+-- 14.19
+--convert :: (a -> b) -> (a -> Either b c)
+--convert f = (\x -> Left (f x))
+
+-- 14.20
+join :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+join f g (Left x) = Left (f x)
+join f g (Right y) = Right (g y)
+
+-- Redefinition of join using either
+join' :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+join' f g v = either (\x -> Left (f x)) (\y -> Right (g y)) v 
+
 -- Arbitrarily branching trees
 
 data GTree a = Leaf a | Gnode [GTree a]
+                deriving (Show)
 
+-- 14.21
+
+gtEx1 = Leaf 1 :: GTree Int
+gtEx2 = Gnode [Gnode [Leaf 2,Leaf 21],Gnode [Leaf 22]] :: GTree Int
+gtEx3 = Gnode [Gnode [Leaf 3,Leaf 31],Gnode [Leaf 32]] :: GTree Int
+gtEx4 = Gnode [gtEx1,gtEx2,gtEx3]
+
+countLeaves :: (GTree a) -> Int
+countLeaves (Leaf n) = 1
+countLeaves (Gnode []) = 0
+countLeaves (Gnode branches) = sum $ map countLeaves branches
+
+isGTNode :: (GTree a) -> Bool
+isGTNode (Leaf _) = False
+isGTNode (Gnode _) = True
+
+countGTNodes :: (GTree a) -> Int
+countGTNodes (Leaf _) = 0
+countGTNodes (Gnode bs) = length $ filter isGTNode bs
+
+depthGTBranch :: Int -> (GTree a) -> Int
+depthGTBranch cur_depth (Leaf _) = cur_depth
+depthGTBranch cur_depth (GNode bs) = map (depthGTBranch (cur_depth+1)) bs ... 
+
+depthGTree :: (GTree a) -> Int
+depthGTree (Leaf _) = 0
+depthGTree (Gnode bs) = map depthGTBranch 1 
 
 -- Case study: Program Errors
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^

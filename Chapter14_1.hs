@@ -15,6 +15,7 @@ import Prelude hiding (Either(..),either,Maybe(..),maybe)
 import Test.QuickCheck
 import Control.Monad
 import Data.List
+import Data.Either
 
 -- Algebraic types
 -- ^^^^^^^^^^^^^^^
@@ -181,11 +182,13 @@ reflect NilT = NilT
 reflect (Node n t1 t2) = Node n (reflect t2) (reflect t1) 
 
 -- 14.13
-collapse, sortTree :: NTree -> [Integer]
-collapse NilT = []
-collapse (Node n t1 t2) = (collapse t1)++[n]++(collapse t2)
+-- Commented out because same definitions occurs
+-- in Chapter14_2.
+--collapse, sortTree :: NTree -> [Integer]
+--collapse NilT = []
+--collapse (Node n t1 t2) = (collapse t1)++[n]++(collapse t2)
 
-sortTree = sort . collapse
+--sortTree = sort . collapse
 
 -- Rearranging expressions
 -- ^^^^^^^^^^^^^^^^^^^^^^^

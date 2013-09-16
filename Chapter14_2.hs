@@ -173,6 +173,23 @@ depthGTree :: (GTree a) -> Int
 depthGTree (Leaf _) = 0
 depthGTree (Gnode bs) = (head . reverse . sort) $ map (depthGTBranch 1) bs
 
+findGTLeaves :: (GTree a) -> [a]
+findGTLeaves (Leaf n) = [n]
+findGTLeaves (Gnode bs) = concat $ map findGTLeaves bs
+
+sumGTree :: (GTree Int) -> Int
+sumGTree (Leaf n) = n
+sumGTree (Gnode bs) = sum $ concat $ map findGTLeaves bs
+
+elemOfGTree :: Eq a =>  a -> (GTree a) -> Bool
+elemOfGTree e = (elem e) . findGTLeaves
+
+mapOnGTree :: (a -> b) -> (GTree a) -> [b]
+mapOnGTree f t = (map f . findGTLeaves) t
+
+--flattenGTree :: (GTree a) -> [???]
+-- Perhaps it's just the same function of findGTLeaves
+
 -- Case study: Program Errors
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

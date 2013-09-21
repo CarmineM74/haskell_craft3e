@@ -277,6 +277,10 @@ squashMaybe Nothing = Nothing
 squashMaybe (Just Nothing) = Nothing
 squashMaybe (Just (Just x)) = Just x
 
+-- 14.26
+composeMaybe :: (a -> Maybe b) -> (b -> Maybe c) -> (a -> Maybe c)
+composeMaybe f g = squashMaybe . ((mapMaybe g) . f)
+
 -- Generalising the Maybe type to include an error message in the `Nothing'
 -- part.
 

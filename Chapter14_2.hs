@@ -257,6 +257,20 @@ handle1, handle2 :: Integer
 handle1 = maybe 56 (1+) (mapMaybe (*3) (errDiv 9 0)) 
 handle2 = maybe 56 (1+) (mapMaybe (*3) (errDiv 9 1))  
 
+-- 14.23
+itemsAtPos :: [Int] -> Int -> Int -> Maybe (Int,Int)
+itemsAtPos xs m n
+  | (m > len) || (n > len) = Nothing
+  | otherwise = Just ((xs !! m),(xs !! n))
+  where
+    len = length xs - 1
+
+process :: [Int] -> Int -> Int -> Int
+process xs m n = maybe 0 (\(x,y) -> x + y) $ itemsAtPos xs m n
+    
+process' :: [Int] -> Int -> Int -> Int
+process' xs m n = maybe 0 id (mapMaybe (\(x,y) -> x + y) (itemsAtPos xs m n))
+
 -- Generalising the Maybe type to include an error message in the `Nothing'
 -- part.
 

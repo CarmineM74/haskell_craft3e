@@ -271,6 +271,12 @@ process xs m n = maybe 0 (\(x,y) -> x + y) $ itemsAtPos xs m n
 process' :: [Int] -> Int -> Int -> Int
 process' xs m n = maybe 0 id (mapMaybe (\(x,y) -> x + y) (itemsAtPos xs m n))
 
+-- 14.25
+squashMaybe :: Maybe (Maybe a) -> Maybe a
+squashMaybe Nothing = Nothing
+squashMaybe (Just Nothing) = Nothing
+squashMaybe (Just (Just x)) = Just x
+
 -- Generalising the Maybe type to include an error message in the `Nothing'
 -- part.
 

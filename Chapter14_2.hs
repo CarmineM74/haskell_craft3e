@@ -373,6 +373,10 @@ edit (e:es) string@(x:xs) =
       Kill -> []
       Swap -> (head xs):x:(tail xs) -- 14.28
 
+-- 14.29
+edit' :: [Edit] -> String -> [String]
+edit' es string = map (flip edit string) [take x es | x <- [1..length es]]
+
 -- Simulation
 -- ^^^^^^^^^^
 

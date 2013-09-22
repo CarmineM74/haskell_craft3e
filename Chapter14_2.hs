@@ -299,21 +299,40 @@ data Edit = Change Char |
             Copy |
             Delete |
             Insert Char |
-            Kill  
+            Kill |  
+            Swap -- 14.28
             deriving (Eq,Show)
 
 -- Transforming one string into another, optimally,
+
+
+-- 14.28
+canSwap :: String -> String -> Bool
+canSwap s1 s2
+  | (length s1 <= 2) || (length s2 <= 2) = False
+  | otherwise = s1' == s2
+  where
+    (x:x':xs) = s1
+    s1' = x':x:xs
+
+canSwap' :: String -> String -> Bool
+canSwap' s1 s2 = (h1++t1) == s2 
+  where
+    h1 = (reverse . take 2) s1
+    t1 = drop 2 s1
 
 transform :: String -> String -> [Edit]
 
 transform [] [] = []
 transform xs [] = [Kill]
 transform [] ys = map Insert ys
-transform (x:xs) (y:ys)
+transform s1@(x:xs) s2@(y:ys)
   | x==y        = Copy : transform xs ys
+  | canSwap' s1 s2   = [Swap] -- 14.28
   | otherwise   = best [ Delete   : transform xs (y:ys) ,
                          Insert y : transform (x:xs) ys ,
                          Change y : transform xs ys ]
+
 --  
 -- How do we choose the best sequence? We choose the one with the lowest
 -- cost.
@@ -352,6 +371,7 @@ edit (e:es) string@(x:xs) =
       Delete -> edit es xs
       Insert ch -> ch : edit es string
       Kill -> []
+      Swap -> (head xs):x:(tail xs) -- 14.28
 
 -- Simulation
 -- ^^^^^^^^^^

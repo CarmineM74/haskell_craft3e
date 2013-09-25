@@ -333,6 +333,28 @@ transform s1@(x:xs) s2@(y:ys)
                          Insert y : transform (x:xs) ys ,
                          Change y : transform xs ys ]
 
+-- 14.32
+padString :: String -> Int -> String
+padString s w 
+  | len_s == w = s
+  | otherwise = s ++ (replicate (w-len_s) ' ')
+  where
+    len_s = length s
+
+transform' :: String -> String -> [Edit]
+transform' s1 s2 = zipWith transformStep s1' s2 ++ deletions
+  where
+    (len1,len2) = (length s1, length s2)
+    maxlen = max len1 len2
+    s1' = if len1 == maxlen then take len2 s1 else padString s1 maxlen
+    deletions = if s1 /= s1' then (replicate (maxlen-len2) Delete) else []
+
+
+transformStep :: Char -> Char -> Edit
+transformStep c1 c2
+  | c1 == c2 = Copy
+  | otherwise = Change c2 
+
 --  
 -- How do we choose the best sequence? We choose the one with the lowest
 -- cost.

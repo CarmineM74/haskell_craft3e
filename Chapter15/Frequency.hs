@@ -26,6 +26,10 @@ frequency
     where
     start ch = (ch,1)
 
+-- freq
+freq :: [Char] -> [ (Char,Int) ]
+freq = sortBy (comparing snd) . map (\x -> (head xs,length xs)) . group . sort
+
 -- Merge sort parametrised on the merge operation. This is more	
 -- general than parametrising on the ordering operation, since	
 -- it permits amalgamation of elements with equal keys		

@@ -39,3 +39,20 @@ remQ q@(Queue xs)
   | not (isEmptyQ q)   = (head xs , Queue (tail xs))
   | otherwise          = error "remQ"
 
+-- 16.11
+-- Unique queue
+-- The only difference from queue defined in 
+-- Queues1.hs is in addQ function
+-- This function must forbid the insertion of duplicate elements.
+-- The question is: How should addQ behave when trying to add
+-- a duplicate element to the queue?
+-- Possible strategies are:
+-- 1. addQ throws an error
+-- 2. addQ doesn't add the element without providing any clue to the user
+-- In this implementation we choose strategy nr. 2
+
+addQ' :: Eq a => a -> Queue a -> Queue a
+addQ' y (Queue xs)
+  | elem y xs   = Queue xs
+  | otherwise   = Queue (xs ++ [y])
+

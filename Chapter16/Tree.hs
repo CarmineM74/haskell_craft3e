@@ -19,9 +19,13 @@ module Tree
    insTree,       -- Ord a => a -> Tree a -> Tree a 
    delete,        -- Ord a => a -> Tree a -> Tree a
    minTree,        -- Ord a => Tree a -> Maybe a
-   elemT           -- Ord a => a -> Tree a -> Bool
+   elemT,          -- Ord a => a -> Tree a -> Bool
+   successor,      -- Ord a => a -> Tree a -> Maybe a
+   closest         -- Int -> Tree Int -> Int
   ) where
 
+import Data.List (sort, sortBy)
+import Data.Ord (comparing)
 
 data Tree a = Nil | Node a (Tree a) (Tree a)					
 --  
@@ -104,3 +108,21 @@ join t1 t2
     where
     (Just mini) = minTree t2
     newt        = delete mini t2
+
+-- Ex 16.29
+successor :: Ord a => a -> Tree a -> Maybe a
+successor _ Nil = Nothing
+
+successor v (Node x t1 t2)
+  | v >= x = successor v t2
+  | v < x = if next_successor == Nothing then Just x else next_successor
+  where
+    next_successor = successor v t1
+
+flattenT :: Tree a -> [a]
+flattenT Nil = []
+flattenT (Node x t1 t2) = x:(flattenT t1)++(flattenT t2)
+
+-- We can ssume closest will always be called on non empty trees
+closest :: Int -> Tree Int -> Int
+closest v = snd . head . sortBy (comparing fst) . map (\x -> (abs (v-x),x)) . sort . flattenT

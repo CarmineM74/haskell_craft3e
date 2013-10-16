@@ -130,3 +130,16 @@ card (Set xs)     = length xs
 
 flatten (Set xs) = xs
 
+-- 16.36
+-- Difference between s1 and s2 is the set of elements
+-- of s1 that don't belong to s2
+diff' :: Ord a => Set a -> Set a -> Set a
+diff' (Set s1) (Set s2) = Set (dif' s1 s2)
+
+dif' :: Ord a => [a] -> [a] -> [a]
+dif' s1 [] = s1
+dif' [] _ = []
+dif' (x:xs) (y:ys)
+  | x == y = dif' xs ys
+  | x < y = x : dif' xs (y:ys)
+  | x > y = dif (x:xs) ys 

@@ -150,9 +150,9 @@ symmDiff s1 s2 = union (diff s1 s2) (diff s2 s1)
 
 -- 16.39
 setUnion :: Ord a => Set (Set a) -> Set a
-setUnion ss = foldSet fn empty ss
-  where
-    fn = (\a s -> union a s)
+setUnion ss = foldSet union empty ss
+--  where
+--    fn = (\a s -> union a s)
 
 setInter :: Ord a => Set (Set a) -> Set a
 setInter s@(Set ss) = foldSet fn initial rest

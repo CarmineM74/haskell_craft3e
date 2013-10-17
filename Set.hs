@@ -143,3 +143,7 @@ dif' (x:xs) (y:ys)
   | x == y = dif' xs ys
   | x < y = x : dif' xs (y:ys)
   | x > y = dif (x:xs) ys 
+
+-- 16.37
+symmDiff :: Ord a => Set a -> Set a -> Set a
+symmDiff s1 s2 = union (diff s1 s2) (diff s2 s1)

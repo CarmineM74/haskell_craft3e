@@ -203,8 +203,18 @@ depthList rel (val:rest) used
 
 --  
 -- From the exercises...						
---  
--- distance :: Eq a => Relation a -> a -> a -> Int
+-- 16.47 
+-- My implementation of distance does not work at all
+-- Complete failure :(
 
+--pathList :: Relation a -> a -> [[a]]
+--pathList rel v  
+--  | length direct == 1 = [direct]
+--  | otherwise = v : map (\n -> n : findDescs rel [] n) direct
+--  where
+--    direct = findDescs rel [] v
+
+--distance :: Eq a => Relation a -> a -> a -> Int
+--distance rel p q = pathList rel p 
 
 

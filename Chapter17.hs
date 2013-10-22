@@ -16,7 +16,7 @@
 
 module Chapter17 where
 
-import Data.List ((\\))	
+import Data.List ((\\),inits,tails)	
 import Chapter13 (iSort)	        -- for iSort
 import Set				-- for Relation
 import Relation				-- for graphs
@@ -136,6 +136,25 @@ splits []     = [ ([],[]) ]
 splits (y:ys) = ([],y:ys) : [ (y:ps,qs) | (ps,qs) <- splits ys]
 
 
+-- Ex 17.2
+-- A sublist is obtained by omitting some of the elements
+-- of a list.
+subLists :: [a] -> [[a]]
+subLists [] = [[]]
+subLists (x:xs) = [ x : sublist | sublist <- subLists xs] ++ subLists xs
+
+-- A subsequence is a continuous block from a list.
+-- A subsequence is built by taking all the possibile
+-- inits of a list, and for each init taking its tails excluding
+-- null results.
+-- xs = [1,2,3,4]
+-- inits xs = [[],[1],[1,2],[1,2,3],[1,2,3,]]
+-- for each ys in xs we take t <- (tails ys) except for null ts
+-- tails [1] == [[1],[]]
+-- tails [1,2] == [[1,2],[2],[]]
+subSequences :: [a] -> [[a]]
+subSequences xs = [ t | is <- inits xs, t <- tails is, not $ null t ]
+
 
 -- Vectors and Matrices
 -- ^^^^^^^^^^^^^^^^^^^^
@@ -149,6 +168,10 @@ type Vector = [Float]
 
 scalarProduct :: Vector -> Vector -> Float
 scalarProduct xs ys = sum [ x*y | (x,y) <- zip xs ys ]
+
+-- 17.4
+scalarProduct' :: Vector -> Vector -> Float
+scalarProduct' xs ys = sum $ zipWith (*) xs ys
 
 -- The type of matrices.
 

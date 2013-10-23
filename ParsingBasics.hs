@@ -91,15 +91,21 @@ list p = (succeed []) `alt`
          ((p >*> list p) `build` convert)
          where
          convert = uncurry (:)
+
 --  
 -- From the exercises...						
 --  
 neList   :: Parse a b -> Parse a [b]
-neList = neList		 	 -- dummy definition
+neList p = (p >*> neList p) `build` convert
+  where
+    convert = uncurry (:)
+
 optional :: Parse a b -> Parse a [b]
-optional = optional	 	 -- dummy definition
+optional p = (succeed []) `alt` (neList p) 
+
 nTimes :: Int -> Parse a b -> Parse a [b]
 nTimes = nTimes		 	 -- dummy definition
+
 --  
 -- A parser for expressions					
 --  

@@ -92,16 +92,25 @@ list p = (succeed []) `alt`
          where
          convert = uncurry (:)
 
+digsToNum :: String -> Int
+digsToNum val = read val :: Int
+
+digList :: Parse Char [Char]
+digList = neList dig
+
 --  
 -- From the exercises...						
 --  
-neList   :: Parse a b -> Parse a [b]
-neList p = (p >*> neList p) `build` convert
+neList   :: Parse a b -> Parse a [b] 
+neList p = (p >*> list p) `build` convert
   where
     convert = uncurry (:)
 
 optional :: Parse a b -> Parse a [b]
-optional p = (succeed []) `alt` (neList p) 
+optional p inp =
+  case p inp of
+    []          -> [([],inp)]
+    ((x,rem):_) -> [([x],rem)]
 
 nTimes :: Int -> Parse a b -> Parse a [b]
 nTimes = nTimes		 	 -- dummy definition

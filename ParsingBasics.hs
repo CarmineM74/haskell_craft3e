@@ -112,8 +112,13 @@ optional p inp =
     []          -> [([],inp)]
     ((x,rem):_) -> [([x],rem)]
 
+-- 17.11
+-- Not quite sure that when n == 0 the result should be []
+-- Still I can argue that asking to match 0 objects can always
+-- return a successful result because it means no processing at all?
 nTimes :: Int -> Parse a b -> Parse a [b]
-nTimes = nTimes		 	 -- dummy definition
+nTimes 0 _ = succeed []
+nTimes n p = (p >*> (nTimes (n-1) p)) `build` (uncurry (:)) 
 
 --  
 -- A parser for expressions					

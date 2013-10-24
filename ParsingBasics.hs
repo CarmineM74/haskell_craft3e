@@ -179,6 +179,12 @@ charlistToExpr :: [Char] -> Expr
 charlistToExpr l@(x:xs)
   | x == '~' = Lit (read ('-':xs) :: Int)
   | otherwise = Lit (read l :: Int)
+
+-- 17.15
+
+assignParse :: Parse Char (Expr, (Char, Expr))
+assignParse = varParse >*> (token ':') >*> opExpParse
+
 --  
 -- A grammar for unbracketed expressions.				
 -- 								

@@ -185,6 +185,34 @@ charlistToExpr l@(x:xs)
 assignParse :: Parse Char (Expr, (Char, Expr))
 assignParse = varParse >*> (token ':') >*> opExpParse
 
+-- 17.20
+-- "[2,-3,45]" -> [2,-3,45]
+
+intObj :: Parse Char Int
+intObj = (neList (spot isDigit)) `build` read 
+
+-- Pattern for resulting element [(n,[])]
+-- (('[',([(x,((sep,y):ys))],']')),[])
+listIntObj = list (intObj >*> (list ((token ',') >*> intObj)))
+makeInt ((n,ns):zs) = n : (map snd ns)
+makeInt _ = []
+
+listOfInts 
+  = (token '[' >*>
+     listIntObj >*>
+     token ']') 
+
+-- Last element pattern:
+-- (('[',([(x,((sep,y):ys))],']')),[])
+-- build p f inp = [ (f x,rem) | (x,rem) <- p inp ]
+makeList :: (t, ([(a, [(a1, a)])], t1)) -> [a]
+makeList (_,(((n,((_,m):zs)):ys),_)) = n : m : (map snd zs)
+makeList _ = []
+
+parseListOfInts inp = concat [ x : y : (map snd ys) | ((_,([(x,((sep,y):ys))],_)),[]) <- xs ]
+  where
+    xs = listOfInts inp
+
 --  
 -- A grammar for unbracketed expressions.				
 -- 								

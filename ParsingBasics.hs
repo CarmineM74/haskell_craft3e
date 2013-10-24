@@ -20,7 +20,9 @@ infixr 5 >*>
 --  
 type Var = Char
 data Expr = Lit Int | Var Var | Op Op Expr Expr
+      deriving (Show)
 data Op   = Add | Sub | Mul | Div | Mod
+      deriving (Show)
 --  
 -- The type of parsers.						
 --  
@@ -150,11 +152,15 @@ opExpParse
 
 makeExpr (_,(e1,(bop,(e2,_)))) = Op (charToOp bop) e1 e2
 
+operations :: [(Char,Op)]
+operations = [('+',Add),('-',Sub),('*',Mul),('/',Div),('%',Mod)]
+
+-- 17.12
 isOp :: Char -> Bool
-isOp = isOp		  	 -- dummy definition
+isOp c = length (filter ((==c).fst) operations) > 0
 
 charToOp :: Char -> Op
-charToOp = charToOp	  	 -- dummy definition
+charToOp c = snd $ head $ filter ((==c).fst) operations
 
 --  
 -- A number is a list of digits with an optional ~ at the front. 
@@ -168,8 +174,11 @@ litParse
 --  
 -- From the exercises...						
 --  
+--  17.14
 charlistToExpr :: [Char] -> Expr
-charlistToExpr = charlistToExpr 	 -- dummy definition
+charlistToExpr l@(x:xs)
+  | x == '~' = Lit (read ('-':xs) :: Int)
+  | otherwise = Lit (read l :: Int)
 --  
 -- A grammar for unbracketed expressions.				
 -- 								

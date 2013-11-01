@@ -126,6 +126,14 @@ computeAverage = do
                                     n <- getInt
                                     return (leftVals-1,v+n)
 
+-- 18.6
+accumulate :: [IO a] -> IO [a]
+accumulate [] = return []
+accumulate (x:xs) = do
+                      v <- x
+                      vs <- accumulate xs
+                      return (v : vs)
+
 
 
 -- Further I/O

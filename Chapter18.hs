@@ -89,6 +89,44 @@ sumInteract
        putStr "The sum is "
        print sum
 
+-- 18.2
+fmap :: (a -> b) -> IO a -> IO b
+fmap f ma = do
+              res <- ma
+              return (f res)
+
+-- 18.3
+repeat  :: IO Bool -> IO () -> IO ()
+repeat test oper = do
+                    res <- test
+                    if res == True
+                      then oper
+                      else return ()
+
+-- 18.4
+whileG  :: (a -> IO Bool) -> (a -> IO a) -> (a -> IO a)
+whileG cond oper x = do
+                      res <- cond x
+                      if res == True
+                        then do
+                              y <- oper x
+                              whileG cond oper y
+                        else return x
+
+-- 18.5
+computeAverage :: IO Integer
+computeAverage = do
+                  putStr "Numbers to read: "
+                  howMany <- getInt
+                  (_,v) <- whileG verifyCondition operation (howMany,0)
+                  return (v `div` howMany)
+                where
+                  verifyCondition (leftVals,v) = return (leftVals > 0)
+                  operation (leftVals,v) = do
+                                    n <- getInt
+                                    return (leftVals-1,v+n)
+
+
 
 -- Further I/O
 -- ^^^^^^^^^^^

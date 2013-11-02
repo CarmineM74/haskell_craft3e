@@ -11,9 +11,9 @@
 
 module Chapter18 where
 
-import Prelude hiding (lookup)
+import Prelude hiding (lookup, sequence)
 import System.IO 
-import Control.Monad.Identity
+import Control.Monad.Identity hiding (sequence)
 import Chapter8 (getInt)
 import Data.Time
 import System.Locale
@@ -134,6 +134,23 @@ accumulate (x:xs) = do
                       vs <- accumulate xs
                       return (v : vs)
 
+sequence  :: [IO a] -> IO ()
+sequence [] = return ()
+sequence (x:xs) = do
+                    x
+                    sequence xs
+                    return ()
+
+seqList :: [a -> IO a] -> a -> IO a
+seqList [] v = return v
+seqList (x:xs) v = do
+                    res <- x v
+                    res' <- seqList xs res
+                    return res'
+
+
+test  :: String -> IO String
+test v = return (v ++ "*")
 
 
 -- Further I/O

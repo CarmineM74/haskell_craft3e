@@ -18,6 +18,7 @@ import Chapter8 (getInt)
 import Data.Time
 import System.Locale
 import System.IO.Unsafe (unsafePerformIO)
+import System.Directory(doesFileExist)
 
 -- Programming with monads
 -- ^^^^^^^^^^^^^^^^^^^^^^^
@@ -99,7 +100,7 @@ fmap f ma = do
 repeat  :: IO Bool -> IO () -> IO ()
 repeat test oper = do
                     res <- test
-                    if res == True
+                    if res 
                       then oper
                       else return ()
 
@@ -107,7 +108,7 @@ repeat test oper = do
 whileG  :: (a -> IO Bool) -> (a -> IO a) -> (a -> IO a)
 whileG cond oper x = do
                       res <- cond x
-                      if res == True
+                      if res
                         then do
                               y <- oper x
                               whileG cond oper y
@@ -145,8 +146,7 @@ seqList :: [a -> IO a] -> a -> IO a
 seqList [] v = return v
 seqList (x:xs) v = do
                     res <- x v
-                    res' <- seqList xs res
-                    return res'
+                    seqList xs res
 
 
 test  :: String -> IO String
@@ -160,7 +160,7 @@ test v = return (v ++ "*")
 
 copyInteract :: IO ()
 
-copyInteract = 
+copyInteract =
     do
       hSetBuffering stdin LineBuffering
       copyEOF
@@ -168,12 +168,12 @@ copyInteract =
 
 copyEOF :: IO ()
 
-copyEOF = 
-    do 
+copyEOF =
+    do
       eof <- isEOF
-      if eof  
-        then return () 
-        else do line <- getLine 
+      if eof
+        then return ()
+        else do line <- getLine
                 putStrLn line
                 copyEOF
 
@@ -185,6 +185,25 @@ listIOprog :: String -> String
 
 listIOprog = unlines . map reverse . lines
 
+-- 18.8
+
+readIntsFrom :: FilePath -> IO [Int] 
+readIntsFrom file = do
+                      contents <- readFile file
+                      let sElements = lines contents
+                      let elements = map (\x -> read x :: Int) sElements
+                      return elements
+
+sumIntsFromFile   :: FilePath -> IO Int
+sumIntsFromFile file = do
+                        exist <- doesFileExist file
+                        if exist
+                          then do
+                            ints <- readIntsFrom file
+                            return (sum ints)
+                          else do
+                            error "Specified file does not exists!"
+                            return 0
 
 -- Generating random numbers
 
@@ -212,11 +231,11 @@ addOneInt :: IO ()
 
 addOneInt 
   = do line <- getLine
-       putStrLn (show (1 + read line :: Int))       
+       putStrLn (show (1 + read line :: Int))
 
 addOneInt' 
   = getLine >>= \line ->
-    putStrLn (show (1 + read line :: Int))     
+    putStrLn (show (1 + read line :: Int))
 
 -- Monads for Functional Programming
 -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -20,7 +20,9 @@ infixr 5 >*>
 --  
 type Var = Char
 data Expr = Lit Int | Var Var | Op Op Expr Expr
+      deriving (Show)
 data Op   = Add | Sub | Mul | Div | Mod
+      deriving (Show)
 --  
 -- The type of parsers.						
 --  
@@ -150,11 +152,15 @@ opExpParse
 
 makeExpr (_,(e1,(bop,(e2,_)))) = Op (charToOp bop) e1 e2
 
+operations :: [(Char,Op)]
+operations = [('+',Add),('-',Sub),('*',Mul),('/',Div),('%',Mod)]
+
+-- 17.12
 isOp :: Char -> Bool
-isOp = isOp		  	 -- dummy definition
+isOp c = length (filter ((==c).fst) operations) > 0
 
 charToOp :: Char -> Op
-charToOp = charToOp	  	 -- dummy definition
+charToOp c = snd $ head $ filter ((==c).fst) operations
 
 --  
 -- A number is a list of digits with an optional ~ at the front. 
@@ -168,8 +174,45 @@ litParse
 --  
 -- From the exercises...						
 --  
+--  17.14
 charlistToExpr :: [Char] -> Expr
-charlistToExpr = charlistToExpr 	 -- dummy definition
+charlistToExpr l@(x:xs)
+  | x == '~' = Lit (read ('-':xs) :: Int)
+  | otherwise = Lit (read l :: Int)
+
+-- 17.15
+
+assignParse :: Parse Char (Expr, (Char, Expr))
+assignParse = varParse >*> (token ':') >*> opExpParse
+
+-- 17.20
+-- "[2,-3,45]" -> [2,-3,45]
+
+intObj :: Parse Char Int
+intObj = (neList (spot isDigit)) `build` read 
+
+-- Pattern for resulting element [(n,[])]
+-- (('[',([(x,((sep,y):ys))],']')),[])
+listIntObj = list (intObj >*> (list ((token ',') >*> intObj)))
+makeInt ((n,ns):zs) = n : (map snd ns)
+makeInt _ = []
+
+listOfInts 
+  = (token '[' >*>
+     listIntObj >*>
+     token ']') 
+
+-- Last element pattern:
+-- (('[',([(x,((sep,y):ys))],']')),[])
+-- build p f inp = [ (f x,rem) | (x,rem) <- p inp ]
+makeList :: (t, ([(a, [(a1, a)])], t1)) -> [a]
+makeList (_,(((n,((_,m):zs)):ys),_)) = n : m : (map snd zs)
+makeList _ = []
+
+parseListOfInts inp = concat [ x : y : (map snd ys) | ((_,([(x,((sep,y):ys))],_)),[]) <- xs ]
+  where
+    xs = listOfInts inp
+
 --  
 -- A grammar for unbracketed expressions.				
 -- 								
